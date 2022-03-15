@@ -5,23 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".activity.activity.DetailsPhotoActivity">
+    tools:context=".activity.DetailsPhotoActivity">
 
     <FrameLayout
+        android:id="@+id/detail_view_contener"
+        android:background="@color/white"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"/>
 
-        <com.jsibbold.zoomage.ZoomageView
-            android:id="@+id/iv_detailed_photo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop" />
-        <com.airbnb.lottie.LottieAnimationView
-            android:layout_gravity="center"
-            app:lottie_repeatCount="1"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:id="@+id/lottie_animation"/>
-    </FrameLayout>
+
 </FrameLayout>

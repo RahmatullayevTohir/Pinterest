@@ -7,21 +7,15 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.pinterest.R
 
-class CommentFragment:Fragment() {
+class UpdatesFragment:Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val  view: View = inflater.inflate(R.layout.comment_fragment,container,false)
-        initViews(view)
+        val view: View = inflater.inflate(R.layout.updates_view_pager, container , false)
         return view
     }
-
-    private fun initViews(view: View) {
-
-    }
-
 
 }

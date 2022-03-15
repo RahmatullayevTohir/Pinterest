@@ -1,22 +1,23 @@
 package com.example.pinterest.adapter
 
-import android.util.Log
+import android.annotation.SuppressLint
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.pinterest.R
-import com.example.pinterest.fragment.HomeFragment
+import com.example.pinterest.activity.MainActivity
+import com.example.pinterest.fragment.DetailsFragment
 import com.example.pinterest.model.PhotoModel
+import com.squareup.picasso.Picasso
 
-class HomeAdapter(
-    var context: HomeFragment,
-    var items: ArrayList<PhotoModel>,
-    param: (Any, Any, Any) -> Unit
-):RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class HomeAdapter(var context: Context):RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    var items: ArrayList<PhotoModel> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_home_layout,parent,false)
@@ -24,30 +25,31 @@ class HomeAdapter(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val item = items[position]
-
-        if (holder is HomeViewHolder){
-            var iv_photo = holder.iv_photo
-            var tv_number = holder.tv_number
-            Log.d("@@@",item.urls.small)
-//            Picasso.get().load(item.image).into(iv_photo)
-            Glide.with(holder.itemView).load(item.urls.small).into(iv_photo)
-            tv_number.text = item.likes.toString()
-        }
+        if (holder is HomeViewHolder)
+        holder.bind(position)
     }
+
+
 
     override fun getItemCount(): Int {
         return items.size
     }
 
     inner class HomeViewHolder(view: View):RecyclerView.ViewHolder(view){
-        var iv_photo :ImageView
-        var tv_number:TextView
+        val iv_likes:ImageView = view.findViewById(R.id.iv_likes)
+        val iv_photo :ImageView = view.findViewById(R.id.iv_photo)
+        val tv_number:TextView = view.findViewById(R.id.tv_number)
 
-        init {
-            iv_photo = view.findViewById(R.id.iv_photo)
-            tv_number = view.findViewById(R.id.tv_number)
-//            Glide.with(view).load(items[1].image).placeholder(R.drawable.ic_launcher_background).into(iv_photo)
+        @SuppressLint("NotifyDataSetChanged")
+        fun bind(position: Int){
+            iv_likes.visibility = View.GONE
+            var photo = items[position]
+            ViewCompat.setTransitionName(iv_photo,""+position)
+            Picasso.get().load(photo.urls.small).into(iv_photo)
+            tv_number.text = photo.user.name.toString()
+            itemView.setOnClickListener {
+                (context as MainActivity).replaceFragment(DetailsFragment(photo))
+            }
         }
     }
 }

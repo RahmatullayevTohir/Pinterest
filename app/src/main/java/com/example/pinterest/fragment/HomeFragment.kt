@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.pinterest.R
 import com.example.pinterest.activity.DetailsPhotoActivity
+import com.example.pinterest.activity.MainActivity
 import com.example.pinterest.adapter.HomeAdapter
 import com.example.pinterest.model.PhotoModel
 import com.example.pinterest.network.retrofit.RetrofitHttp
@@ -23,11 +24,10 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class HomeFragment:Fragment() {
+class HomeFragment():Fragment() {
 
-    lateinit var recyclerView: RecyclerView
-    var photoModel: ArrayList<PhotoModel> = ArrayList()
-    lateinit var adapter: HomeAdapter
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: HomeAdapter
     var a =1
 
 
@@ -35,88 +35,66 @@ class HomeFragment:Fragment() {
         fun newInstance() = HomeFragment()
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        adapter = HomeAdapter(requireContext())
+        getPhotosViaApi(1)
+    }
+
+//    override fun onResume() {
+//        super.onResume()
+//    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val view: View = inflater.inflate(R.layout.home_fragment,container,false)
         initViews(view)
         return view
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
     }
 
     private fun initViews(view: View) {
         recyclerView = view.findViewById(R.id.recyclerView)
         val layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         recyclerView.layoutManager = layoutManager
+        recyclerView.adapter = adapter
 
-        getPhotosViaApi(a)
 
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                val into = intArrayOf(0,0)
-                val lastVisiblePosition = layoutManager.findLastVisibleItemPositions(into)
-                if(lastVisiblePosition[1] == layoutManager.itemCount-1||lastVisiblePosition[0] == layoutManager.itemCount-1)
+//                val into = intArrayOf(0,0)
+//                val lastVisiblePosition = layoutManager.findLastVisibleItemPositions(into)
+//                if(lastVisiblePosition[1] == layoutManager.itemCount-1||lastVisiblePosition[0] == layoutManager.itemCount-1)
+//                    getPhotosViaApi(++a)
+                if (!recyclerView.canScrollVertically(1)) {
                     getPhotosViaApi(++a)
+                }
             }
         })
     }
 
-    private fun refreshAdapter(photos: ArrayList<PhotoModel>) {
-        adapter = HomeAdapter(this, photos) { pos, photo, image ->
-            sendPhotoToActivity(pos as Int, photo as PhotoModel, image as ImageView)
-        }
-        recyclerView.adapter = adapter
-
-    }
-
-    private fun getPhotosViaApi(page:Int): List<PhotoModel> {
-
-        var retrofitData = RetrofitHttp.apiService.getPhotos(page, 20)
-        retrofitData.enqueue(object : Callback<ArrayList<PhotoModel>?> {
-            @SuppressLint("NotifyDataSetChanged")
+    private fun getPhotosViaApi(page:Int) {
+        RetrofitHttp.apiService.getPhotos(page = page, 20).enqueue(object :Callback<ArrayList<PhotoModel>>{
             override fun onResponse(
-                call: Call<ArrayList<PhotoModel>?>,
-                response: Response<ArrayList<PhotoModel>?>
+                call: Call<ArrayList<PhotoModel>>,
+                response: Response<ArrayList<PhotoModel>>
             ) {
-                if (!response.isSuccessful) {
-                    Log.d("@@@", "code: " + response.code())
-                }
-//                photoHome.clear()
-                if (a==1){
-                    refreshAdapter(response.body()!!)
-                }else{
+                if (response.isSuccessful){
                     adapter.items.addAll(response.body()!!)
                     adapter.notifyDataSetChanged()
                 }
-//                photoHome.addAll(response.body() as ArrayList<_root_ide_package_.com.example.pinterest.model.PhotoModel>)
-//                 refreshAdapter(photoHome)
             }
 
-            override fun onFailure(call: Call<ArrayList<PhotoModel>?>, t: Throwable) {
-                Log.d("@@@", t.message.toString())
+            override fun onFailure(call: Call<ArrayList<PhotoModel>>, t: Throwable) {
+
             }
         })
-        return photoModel
 
     }
 
-    private fun sendPhotoToActivity(pos: Int, photo: PhotoModel, image: ImageView) {
-        val intent = Intent(context, DetailsPhotoActivity::class.java)
-        intent.putExtra("photoTester", photo)
-        intent.putExtra("transitionName", ViewCompat.getTransitionName(image))
-        val options = ActivityOptions.makeSceneTransitionAnimation(
-            context as Activity?,
-            image,
-            ViewCompat.getTransitionName(image)
-        )
-        startActivity(intent, options.toBundle())
-    }
 
 
 }

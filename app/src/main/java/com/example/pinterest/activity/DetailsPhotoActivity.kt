@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import com.airbnb.lottie.LottieAnimationView
 import com.example.pinterest.R
 import com.example.pinterest.model.PhotoModel
@@ -18,10 +19,13 @@ import com.squareup.picasso.Picasso
 class DetailsPhotoActivity : AppCompatActivity() {
     lateinit var imageView: ImageView
     lateinit var lottieAnimationView: LottieAnimationView
+    lateinit var iv_back:ImageView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details_photo)
 
+        initViewsDetails()
 
         supportPostponeEnterTransition()
         val extras = intent.extras
@@ -49,7 +53,6 @@ class DetailsPhotoActivity : AppCompatActivity() {
             }
         })
 
-        imageView.setOnClickListener {  }
         imageView.setOnDoubleClickListener {
             lottieAnimationView.setAnimation("like-animation.json")
             lottieAnimationView.playAnimation()
@@ -71,4 +74,12 @@ class DetailsPhotoActivity : AppCompatActivity() {
 
         }
     }
+
+    private fun initViewsDetails() {
+        iv_back = findViewById(R.id.iv_back)
+        iv_back.setOnClickListener {
+            finish()
+        }
+    }
+
 }

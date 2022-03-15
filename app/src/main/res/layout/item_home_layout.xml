@@ -30,6 +30,7 @@
         android:layout_height="wrap_content">
 
         <ImageView
+            android:id="@+id/iv_likes"
             android:layout_margin="5dp"
             android:src="@drawable/ic_baseline_favorite_24"
             android:layout_width="wrap_content"
